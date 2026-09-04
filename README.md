@@ -1,22 +1,73 @@
-
 # AI Finance Controller
 
-## Problem
-[2-3 sentences: reconciliation between bank transactions and invoices is manual, 
-slow, and error-prone at scale. Vendor name variations, timing differences, 
-partial payments, and duplicates make exact matching insufficient.]
+### Run the books and the cash position
 
-## Approach
-A three-layer system
-1. **Deterministic rule engine** — fuzzy-matches bank transactions to invoices 
-   using vendor name similarity (RapidFuzz), amount tolerance, and date proximity, 
-   producing a weighted confidence score.
-2. **Confidence-based routing** — high-confidence matches are auto-resolved with 
-   zero AI involvement; only genuinely ambiguous cases are escalated.
-3. **AI investigation layer** — Claude investigates only the cases the rule engine 
-   can't confidently resolve, returning a structured, explained verdict.
+An AI-powered finance operations system that reconciles bank transactions against invoices, detects exceptions, measures reconciliation accuracy, and uses Gemini AI to investigate difficult cases that deterministic rules cannot confidently resolve.
 
-## Architecture
-[Paste a simple text diagram, e.g.]
-=======
+---
 
+## 🚀 Why This Project?
+
+Financial reconciliation is often repetitive and rule-heavy:
+
+- Does this bank transaction correspond to an invoice?
+- Is the vendor name slightly different?
+- Is the payment amount correct?
+- Is the payment late or early?
+- Is this a duplicate?
+- Is this a partial payment?
+- Should a human investigate the transaction?
+
+A simple matching system can produce matches, but a finance controller needs more than that.
+
+This project focuses on:
+
+> **Throughput + measured accuracy + explainable exceptions + AI-assisted investigation**
+
+The system processes a batch of synthetic financial records and reports both successful matches and cases requiring human attention.
+
+---
+
+# 🏗️ Architecture
+
+```text
+                 ┌──────────────────┐
+                 │  Data Generator   │
+                 │  Synthetic Data   │
+                 └────────┬─────────┘
+                          │
+                          ▼
+                 ┌──────────────────┐
+                 │    Corruptor      │
+                 │ Introduce Errors  │
+                 └────────┬─────────┘
+                          │
+                          ▼
+                 ┌──────────────────┐
+                 │ Reconciliation   │
+                 │     Engine       │
+                 └────────┬─────────┘
+                          │
+                          ▼
+                 ┌──────────────────┐
+                 │ Exception        │
+                 │ Classifier       │
+                 └────────┬─────────┘
+                          │
+             ┌────────────┴────────────┐
+             │                         │
+             ▼                         ▼
+      Deterministic Rules        Gemini AI Review
+             │                         │
+             └────────────┬────────────┘
+                          ▼
+                 ┌──────────────────┐
+                 │    Evaluator      │
+                 │ Accuracy Metrics  │
+                 └────────┬─────────┘
+                          │
+                          ▼
+                 ┌──────────────────┐
+                 │ Streamlit        │
+                 │   Dashboard      │
+                 └──────────────────┘
