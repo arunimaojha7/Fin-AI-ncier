@@ -1,3 +1,4 @@
+
 # AI Finance Controller
 
 ## Problem
@@ -6,7 +7,7 @@ slow, and error-prone at scale. Vendor name variations, timing differences,
 partial payments, and duplicates make exact matching insufficient.]
 
 ## Approach
-A three-layer system:
+A three-layer system
 1. **Deterministic rule engine** — fuzzy-matches bank transactions to invoices 
    using vendor name similarity (RapidFuzz), amount tolerance, and date proximity, 
    producing a weighted confidence score.
@@ -17,3 +18,5 @@ A three-layer system:
 
 ## Architecture
 [Paste a simple text diagram, e.g.]
+=======
+
