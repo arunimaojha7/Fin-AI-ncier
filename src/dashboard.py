@@ -12,7 +12,7 @@ import streamlit as st
 
 st.set_page_config(
     page_title="AI Finance Controller",
-    page_icon="💰",
+    page_icon="◆",
     layout="wide"
 )
 
@@ -34,30 +34,166 @@ RECONCILIATION_FILE = DATA_DIR / "reconciliation_results.csv"
 
 st.markdown(
     """
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
     <style>
 
-    .main-title {
-        font-size: 42px;
+    :root {
+        --ink: #1A2332;
+        --ink-soft: #4A5568;
+        --paper: #FAF9F6;
+        --paper-raised: #FFFFFF;
+        --line: #DDD8CC;
+        --gold: #B8860B;
+        --forest: #2D5F4C;
+        --forest-bg: #EAF1EC;
+        --amber: #96690E;
+        --amber-bg: #FBF1DE;
+        --brick: #8B3A3A;
+        --brick-bg: #F7EBEA;
+    }
+
+    /* Base */
+    .stApp {
+        background-color: var(--paper);
+    }
+
+    html, body, [class*="css"]  {
+        font-family: 'IBM Plex Sans', sans-serif;
+        color: var(--ink);
+    }
+
+    h1, h2, h3 {
+        font-family: 'IBM Plex Serif', serif !important;
+        color: var(--ink) !important;
+        font-weight: 600 !important;
+    }
+
+    /* Masthead */
+    .masthead {
+        border-bottom: 2px solid var(--ink);
+        padding-bottom: 18px;
+        margin-bottom: 6px;
+    }
+
+    .masthead-title {
+        font-family: 'IBM Plex Serif', serif;
+        font-size: 38px;
         font-weight: 700;
-        margin-bottom: 0px;
+        color: var(--ink);
+        letter-spacing: -0.5px;
+        margin-bottom: 4px;
     }
 
-    .subtitle {
-        font-size: 18px;
-        color: #666;
-        margin-bottom: 30px;
+    .masthead-subtitle {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 15px;
+        color: var(--ink-soft);
     }
 
-    .section-title {
+    /* Section headers: numbered like statement sections */
+    .section-header {
+        font-family: 'IBM Plex Serif', serif;
+        font-size: 21px;
+        font-weight: 600;
+        color: var(--ink);
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 8px;
+        margin-top: 8px;
+        margin-bottom: 16px;
+    }
+
+    /* KPI metric styling */
+    div[data-testid="stMetric"] {
+        background-color: var(--paper-raised);
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--ink);
+        padding: 14px 16px;
+        border-radius: 2px;
+    }
+
+    div[data-testid="stMetricLabel"] {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 12.5px;
+        color: var(--ink-soft);
+        font-weight: 500;
+    }
+
+    div[data-testid="stMetricValue"] {
+        font-family: 'IBM Plex Mono', monospace;
         font-size: 26px;
-        font-weight: 650;
-        margin-top: 25px;
+        color: var(--ink);
     }
 
-    .decision-box {
-        padding: 20px;
-        border-radius: 10px;
-        margin-top: 10px;
+    /* Status banners — replace default emoji alert boxes with ledger-style bars */
+    .decision-banner {
+        padding: 14px 18px;
+        border-radius: 2px;
+        font-size: 15px;
+        font-weight: 500;
+        margin: 8px 0 18px 0;
+        border-left: 4px solid;
+    }
+
+    .decision-auto {
+        background-color: var(--forest-bg);
+        border-color: var(--forest);
+        color: var(--forest);
+    }
+
+    .decision-review {
+        background-color: var(--amber-bg);
+        border-color: var(--amber);
+        color: var(--amber);
+    }
+
+    .decision-unresolved {
+        background-color: var(--brick-bg);
+        border-color: var(--brick);
+        color: var(--brick);
+    }
+
+    /* Dataframes */
+    div[data-testid="stDataFrame"] {
+        border: 1px solid var(--line);
+    }
+
+    /* Buttons */
+    .stButton button, .stDownloadButton button {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-weight: 500;
+        border-radius: 2px;
+        border: 1px solid var(--ink);
+    }
+
+    /* Divider replacement spacing */
+    hr {
+        border-color: var(--line) !important;
+        margin: 28px 0 !important;
+    }
+
+    /* Expander */
+    div[data-testid="stExpander"] {
+        border: 1px solid var(--line);
+        border-radius: 2px;
+    }
+
+    .field-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 14.5px;
+    }
+
+    .field-label {
+        color: var(--ink-soft);
+    }
+
+    .field-value {
+        font-family: 'IBM Plex Mono', monospace;
+        color: var(--ink);
     }
 
     </style>
@@ -71,17 +207,19 @@ st.markdown(
 # ============================================================
 
 st.markdown(
-    '<div class="main-title">💰 AI Finance Controller</div>',
+    """
+    <div class="masthead">
+        <div class="masthead-title">AI Finance Controller</div>
+        <div class="masthead-subtitle">
+            Automated bank-to-invoice reconciliation, with evidence-based
+            escalation for exceptions the rule engine cannot safely resolve.
+        </div>
+    </div>
+    """,
     unsafe_allow_html=True
 )
 
-st.markdown(
-    '<div class="subtitle">'
-    'Automated bank-to-invoice reconciliation with '
-    'evidence-based exception handling'
-    '</div>',
-    unsafe_allow_html=True
-)
+st.write("")
 
 
 # ============================================================
@@ -145,90 +283,34 @@ if "status" in results.columns:
 
 total_records = len(results)
 
-auto_matches = results[
-    results["status"] == "AUTO_MATCH"
-]
-
-human_reviews = results[
-    results["status"] == "HUMAN_REVIEW"
-]
-
-unresolved = results[
-    results["status"] == "UNRESOLVED"
-]
-
+auto_matches = results[results["status"] == "AUTO_MATCH"]
+human_reviews = results[results["status"] == "HUMAN_REVIEW"]
+unresolved = results[results["status"] == "UNRESOLVED"]
 
 auto_count = len(auto_matches)
 human_count = len(human_reviews)
 unresolved_count = len(unresolved)
 
+automation_rate = (
+    (auto_count / total_records) * 100
+    if total_records > 0 else 0
+)
 
-# ------------------------------------------------------------
-# Automation rate
-# ------------------------------------------------------------
+auto_match_precision = (
+    (auto_matches["correct"].mean()) * 100
+    if len(auto_matches) > 0 and "correct" in auto_matches.columns
+    else 0
+)
 
-if total_records > 0:
+overall_accuracy = (
+    (results["correct"].mean()) * 100
+    if "correct" in results.columns else 0
+)
 
-    automation_rate = (
-        auto_count /
-        total_records
-    ) * 100
-
-else:
-
-    automation_rate = 0
-
-
-# ------------------------------------------------------------
-# Auto-match precision
-# ------------------------------------------------------------
-
-if (
-    len(auto_matches) > 0
-    and "correct" in auto_matches.columns
-):
-
-    auto_match_precision = (
-        auto_matches["correct"].mean()
-    ) * 100
-
-else:
-
-    auto_match_precision = 0
-
-
-# ------------------------------------------------------------
-# Overall accuracy
-# ------------------------------------------------------------
-
-if "correct" in results.columns:
-
-    overall_accuracy = (
-        results["correct"].mean()
-    ) * 100
-
-else:
-
-    overall_accuracy = 0
-
-
-# ------------------------------------------------------------
-# Average confidence
-# ------------------------------------------------------------
-
-if "confidence" in results.columns:
-
-    average_confidence = (
-        pd.to_numeric(
-            results["confidence"],
-            errors="coerce"
-        )
-        .mean()
-    )
-
-else:
-
-    average_confidence = 0
+average_confidence = (
+    pd.to_numeric(results["confidence"], errors="coerce").mean()
+    if "confidence" in results.columns else 0
+)
 
 
 # ============================================================
@@ -236,155 +318,102 @@ else:
 # ============================================================
 
 st.markdown(
-    '<div class="section-title">Controller Performance</div>',
+    '<div class="section-header">01 · Controller Performance</div>',
     unsafe_allow_html=True
 )
 
 col1, col2, col3, col4 = st.columns(4)
 
-
 with col1:
-
-    st.metric(
-        "Records Processed",
-        f"{total_records:,}"
-    )
-
+    st.metric("Records Processed", f"{total_records:,}")
 
 with col2:
-
-    st.metric(
-        "Automation Rate",
-        f"{automation_rate:.2f}%"
-    )
-
+    st.metric("Automation Rate", f"{automation_rate:.1f}%")
 
 with col3:
-
-    st.metric(
-        "Auto-Match Precision",
-        f"{auto_match_precision:.2f}%"
-    )
-
+    st.metric("Auto-Match Precision", f"{auto_match_precision:.1f}%")
 
 with col4:
-
-    st.metric(
-        "Overall Accuracy",
-        f"{overall_accuracy:.2f}%"
-    )
-
-
-# ============================================================
-# SECOND KPI ROW
-# ============================================================
+    st.metric("Overall Accuracy", f"{overall_accuracy:.1f}%")
 
 st.write("")
 
 col5, col6, col7 = st.columns(3)
 
-
 with col5:
-
-    st.metric(
-        "Average Confidence",
-        f"{average_confidence:.2f}%"
-    )
-
+    st.metric("Average Confidence", f"{average_confidence:.1f}%")
 
 with col6:
-
-    st.metric(
-        "Human Review",
-        f"{human_count}"
-    )
-
+    st.metric("Escalated for Review", f"{human_count}")
 
 with col7:
-
-    st.metric(
-        "Unresolved",
-        f"{unresolved_count}"
-    )
+    st.metric("Unresolved", f"{unresolved_count}")
 
 
 # ============================================================
 # BENCHMARK SUMMARY
 # ============================================================
 
-st.divider()
+st.write("")
+st.write("")
 
 st.markdown(
-    '<div class="section-title">Benchmark Summary</div>',
+    '<div class="section-header">02 · Benchmark Summary</div>',
     unsafe_allow_html=True
 )
 
 summary_col1, summary_col2 = st.columns(2)
 
-
 with summary_col1:
-
-    st.write(
+    st.markdown(
         f"""
-        **Dataset**
-
-        - Records processed: **{total_records}**
-        - Automatically matched: **{auto_count}**
-        - Human review: **{human_count}**
-        - Unresolved: **{unresolved_count}**
-        """
+        <div class="field-row"><span class="field-label">Records processed</span><span class="field-value">{total_records}</span></div>
+        <div class="field-row"><span class="field-label">Automatically matched</span><span class="field-value">{auto_count}</span></div>
+        <div class="field-row"><span class="field-label">Escalated for review</span><span class="field-value">{human_count}</span></div>
+        <div class="field-row"><span class="field-label">Unresolved</span><span class="field-value">{unresolved_count}</span></div>
+        """,
+        unsafe_allow_html=True
     )
-
 
 with summary_col2:
-
-    st.write(
+    st.markdown(
         f"""
-        **Measured performance**
-
-        - Automation rate: **{automation_rate:.2f}%**
-        - Auto-match precision: **{auto_match_precision:.2f}%**
-        - Overall accuracy: **{overall_accuracy:.2f}%**
-        - Average confidence: **{average_confidence:.2f}%**
-        """
+        <div class="field-row"><span class="field-label">Automation rate</span><span class="field-value">{automation_rate:.2f}%</span></div>
+        <div class="field-row"><span class="field-label">Auto-match precision</span><span class="field-value">{auto_match_precision:.2f}%</span></div>
+        <div class="field-row"><span class="field-label">Overall accuracy</span><span class="field-value">{overall_accuracy:.2f}%</span></div>
+        <div class="field-row"><span class="field-label">Average confidence</span><span class="field-value">{average_confidence:.2f}%</span></div>
+        """,
+        unsafe_allow_html=True
     )
+
+st.caption(
+    f"The rule engine resolved {automation_rate:.0f}% of transactions without "
+    f"any AI involvement. AI investigation is reserved for the remaining "
+    f"{human_count + unresolved_count} cases the engine could not confidently classify."
+)
 
 
 # ============================================================
 # EXCEPTION BREAKDOWN
 # ============================================================
 
-st.divider()
-
+st.write("")
 st.markdown(
-    '<div class="section-title">Exception Breakdown</div>',
+    '<div class="section-header">03 · Exception Breakdown</div>',
     unsafe_allow_html=True
 )
 
-
-# Find the most likely exception column
-
 exception_column = None
 
-for column in [
-    "exception_type",
-    "exception",
-    "reason",
-    "error_type"
-]:
-
+for column in ["exception_type", "exception", "reason", "error_type"]:
     if column in results.columns:
-
         exception_column = column
         break
-
 
 if exception_column is not None:
 
     exception_counts = (
-        results[
-            results["status"] != "AUTO_MATCH"
-        ][exception_column]
+        results[results["status"] != "AUTO_MATCH"][exception_column]
         .fillna("UNKNOWN")
         .astype(str)
         .value_counts()
@@ -392,35 +421,24 @@ if exception_column is not None:
 
     if len(exception_counts) > 0:
 
-        st.bar_chart(
-            exception_counts
-        )
+        chart_col, table_col = st.columns([3, 2])
 
-        st.dataframe(
-            exception_counts
-            .rename("count")
-            .reset_index()
-            .rename(
-                columns={
-                    "index": "exception_type"
-                }
-            ),
-            use_container_width=True,
-            hide_index=True
-        )
+        with chart_col:
+            st.bar_chart(exception_counts, color="#1A2332")
+
+        with table_col:
+            st.dataframe(
+                exception_counts.rename("count").reset_index()
+                .rename(columns={"index": "exception_type"}),
+                use_container_width=True,
+                hide_index=True
+            )
 
     else:
-
-        st.success(
-            "No exceptions detected."
-        )
+        st.success("No exceptions detected.")
 
 else:
-
-    st.info(
-        "No exception-type column was found "
-        "in evaluated_results.csv."
-    )
+    st.info("No exception-type column was found in evaluated_results.csv.")
 
 
 # ============================================================
@@ -429,35 +447,23 @@ else:
 
 severity_column = None
 
-for column in [
-    "severity",
-    "risk",
-    "risk_level"
-]:
-
+for column in ["severity", "risk", "risk_level"]:
     if column in results.columns:
-
         severity_column = column
         break
 
-
 if severity_column is not None:
 
+    st.write("")
     st.markdown(
-        '<div class="section-title">'
-        'Exception Severity'
-        '</div>',
+        '<div class="section-header">04 · Exception Severity</div>',
         unsafe_allow_html=True
     )
 
-    exception_rows = results[
-        results["status"] != "AUTO_MATCH"
-    ]
+    exception_rows = results[results["status"] != "AUTO_MATCH"]
 
     severity_counts = (
-        exception_rows[
-            severity_column
-        ]
+        exception_rows[severity_column]
         .fillna("UNKNOWN")
         .astype(str)
         .str.upper()
@@ -465,14 +471,8 @@ if severity_column is not None:
     )
 
     st.dataframe(
-        severity_counts
-        .rename("count")
-        .reset_index()
-        .rename(
-            columns={
-                "index": "severity"
-            }
-        ),
+        severity_counts.rename("count").reset_index()
+        .rename(columns={"index": "severity"}),
         use_container_width=True,
         hide_index=True
     )
@@ -482,816 +482,345 @@ if severity_column is not None:
 # TRANSACTION INVESTIGATION
 # ============================================================
 
-st.divider()
-
+st.write("")
 st.markdown(
-    '<div class="section-title">'
-    '🔎 Investigate Transaction'
-    '</div>',
+    '<div class="section-header">05 · Investigate Transaction</div>',
     unsafe_allow_html=True
 )
 
-st.write(
-    "Select any transaction to inspect the evidence "
-    "behind the controller's decision."
+st.caption(
+    "Select any transaction to inspect the evidence behind the controller's decision."
 )
-
-
-# ============================================================
-# TRANSACTION SELECTOR
-# ============================================================
 
 if "bank_id" in results.columns:
 
-    transaction_ids = (
-        results["bank_id"]
-        .astype(str)
-        .tolist()
-    )
+    transaction_ids = results["bank_id"].astype(str).tolist()
 
-    selected_id = st.selectbox(
-        "Select transaction",
-        transaction_ids
-    )
+    selected_id = st.selectbox("Select transaction", transaction_ids)
 
     selected = results[
-        results["bank_id"].astype(str)
-        == str(selected_id)
+        results["bank_id"].astype(str) == str(selected_id)
     ].iloc[0]
 
 else:
 
-    selected_index = st.selectbox(
-        "Select transaction",
-        results.index
-    )
-
-    selected = results.loc[
-        selected_index
-    ]
+    selected_index = st.selectbox("Select transaction", results.index)
+    selected = results.loc[selected_index]
 
 
-# ============================================================
-# TRANSACTION OVERVIEW
-# ============================================================
+# ------------------------------------------------------------
+# Transaction overview
+# ------------------------------------------------------------
 
-st.markdown(
-    "### Transaction Overview"
-)
-
+st.write("")
 overview_col1, overview_col2, overview_col3 = st.columns(3)
 
-
 with overview_col1:
-
-    st.write(
-        "**Bank ID**"
-    )
-
-    st.write(
-        selected.get(
-            "bank_id",
-            "N/A"
-        )
-    )
-
+    st.metric("Bank ID", selected.get("bank_id", "N/A"))
 
 with overview_col2:
-
-    st.write(
-        "**Vendor**"
+    st.metric(
+        "Vendor",
+        selected.get("bank_vendor", selected.get("vendor", "N/A"))
     )
-
-    st.write(
-        selected.get(
-            "bank_vendor",
-            selected.get(
-                "vendor",
-                "N/A"
-            )
-        )
-    )
-
 
 with overview_col3:
-
-    st.write(
-        "**Bank Date**"
-    )
-
-    st.write(
-        selected.get(
-            "bank_date",
-            selected.get(
-                "date",
-                "N/A"
-            )
-        )
+    st.metric(
+        "Bank Date",
+        selected.get("bank_date", selected.get("date", "N/A"))
     )
 
 
-# ============================================================
-# DECISION
-# ============================================================
+# ------------------------------------------------------------
+# Decision banner
+# ------------------------------------------------------------
 
-status = str(
-    selected.get(
-        "status",
-        "UNKNOWN"
-    )
-).upper()
+status = str(selected.get("status", "UNKNOWN")).upper()
 
-
-st.markdown(
-    "### Controller Decision"
-)
-
+st.write("")
 
 if status == "AUTO_MATCH":
-
-    st.success(
-        "✓ AUTO-MATCH — transaction passed "
-        "the deterministic control thresholds."
+    st.markdown(
+        '<div class="decision-banner decision-auto">'
+        'AUTO-MATCH — transaction passed the deterministic control thresholds.'
+        '</div>',
+        unsafe_allow_html=True
     )
 
 elif status == "HUMAN_REVIEW":
-
-    st.warning(
-        "⚠ HUMAN REVIEW — evidence is plausible "
-        "but insufficient for automatic resolution."
+    st.markdown(
+        '<div class="decision-banner decision-review">'
+        'HUMAN REVIEW — evidence is plausible but insufficient for automatic resolution.'
+        '</div>',
+        unsafe_allow_html=True
     )
 
 elif status == "UNRESOLVED":
-
-    st.error(
-        "✕ UNRESOLVED — the controller could not "
-        "establish a sufficiently reliable match."
+    st.markdown(
+        '<div class="decision-banner decision-unresolved">'
+        'UNRESOLVED — the controller could not establish a sufficiently reliable match.'
+        '</div>',
+        unsafe_allow_html=True
     )
 
 else:
-
-    st.info(
-        f"Decision: {status}"
-    )
+    st.info(f"Decision: {status}")
 
 
-# ============================================================
-# DECISION METRICS
-# ============================================================
+# ------------------------------------------------------------
+# Decision metrics
+# ------------------------------------------------------------
 
 decision_col1, decision_col2, decision_col3 = st.columns(3)
 
-
 with decision_col1:
-
     confidence = pd.to_numeric(
-        pd.Series(
-            [selected.get("confidence")]
-        ),
-        errors="coerce"
+        pd.Series([selected.get("confidence")]), errors="coerce"
     ).iloc[0]
-
-    if pd.notna(confidence):
-
-        st.metric(
-            "Confidence",
-            f"{confidence:.2f}%"
-        )
-
-    else:
-
-        st.metric(
-            "Confidence",
-            "N/A"
-        )
-
+    st.metric("Confidence", f"{confidence:.2f}%" if pd.notna(confidence) else "N/A")
 
 with decision_col2:
-
     margin = pd.to_numeric(
-        pd.Series(
-            [selected.get("margin")]
-        ),
-        errors="coerce"
+        pd.Series([selected.get("margin")]), errors="coerce"
     ).iloc[0]
-
-    if pd.notna(margin):
-
-        st.metric(
-            "Confidence Margin",
-            f"{margin:.2f}"
-        )
-
-    else:
-
-        st.metric(
-            "Confidence Margin",
-            "N/A"
-        )
-
+    st.metric("Confidence Margin", f"{margin:.2f}" if pd.notna(margin) else "N/A")
 
 with decision_col3:
-
-    matched_invoice = selected.get(
-        "matched_invoice",
-        None
-    )
-
+    matched_invoice = selected.get("matched_invoice", None)
     if pd.isna(matched_invoice):
-
         matched_invoice = "None"
-
-    st.metric(
-        "Matched Invoice",
-        str(matched_invoice)
-    )
+    st.metric("Matched Invoice", str(matched_invoice))
 
 
-# ============================================================
-# MATCH EVIDENCE
-# ============================================================
+# ------------------------------------------------------------
+# Match evidence
+# ------------------------------------------------------------
 
-st.markdown(
-    "### 🔍 Match Evidence"
-)
-
+st.write("")
+st.markdown("**Match Evidence**")
 
 evidence_col1, evidence_col2, evidence_col3 = st.columns(3)
 
-
-# ------------------------------------------------------------
-# Bank amount
-# ------------------------------------------------------------
-
 with evidence_col1:
-
-    bank_amount = selected.get(
-        "bank_amount",
-        None
-    )
-
     try:
-
-        st.metric(
-            "Bank Amount",
-            f"₹{float(bank_amount):,.2f}"
-        )
-
-    except:
-
-        st.metric(
-            "Bank Amount",
-            "N/A"
-        )
-
-
-# ------------------------------------------------------------
-# Invoice amount
-# ------------------------------------------------------------
+        st.metric("Bank Amount", f"₹{float(selected.get('bank_amount')):,.2f}")
+    except Exception:
+        st.metric("Bank Amount", "N/A")
 
 with evidence_col2:
-
-    invoice_amount = selected.get(
-        "invoice_amount",
-        None
-    )
-
     try:
-
-        st.metric(
-            "Invoice Amount",
-            f"₹{float(invoice_amount):,.2f}"
-        )
-
-    except:
-
-        st.metric(
-            "Invoice Amount",
-            "N/A"
-        )
-
-
-# ------------------------------------------------------------
-# Amount difference
-# ------------------------------------------------------------
+        st.metric("Invoice Amount", f"₹{float(selected.get('invoice_amount')):,.2f}")
+    except Exception:
+        st.metric("Invoice Amount", "N/A")
 
 with evidence_col3:
-
-    amount_difference = selected.get(
-        "amount_difference",
-        None
-    )
-
     try:
-
-        st.metric(
-            "Amount Difference",
-            f"₹{float(amount_difference):,.2f}"
-        )
-
-    except:
-
-        st.metric(
-            "Amount Difference",
-            "N/A"
-        )
-
-
-# ============================================================
-# DATE EVIDENCE
-# ============================================================
-
-date_difference = selected.get(
-    "date_difference_days",
-    None
-)
+        st.metric("Amount Difference", f"₹{float(selected.get('amount_difference')):,.2f}")
+    except Exception:
+        st.metric("Amount Difference", "N/A")
 
 try:
-
-    date_difference = float(
-        date_difference
-    )
-
-    st.write(
-        f"**Settlement date difference:** "
-        f"{date_difference:.0f} day(s)"
-    )
-
-except:
-
-    st.write(
-        "**Settlement date difference:** N/A"
-    )
+    date_difference = float(selected.get("date_difference_days", None))
+    st.caption(f"Settlement date difference: {date_difference:.0f} day(s)")
+except Exception:
+    st.caption("Settlement date difference: N/A")
 
 
-# ============================================================
-# MATCH EVIDENCE TABLE
-# ============================================================
+# ------------------------------------------------------------
+# Full evidence table
+# ------------------------------------------------------------
 
 evidence_fields = {
-
-    "Bank Vendor":
-        selected.get(
-            "bank_vendor",
-            "N/A"
-        ),
-
-    "Matched Invoice":
-        selected.get(
-            "matched_invoice",
-            "N/A"
-        ),
-
-    "Bank Amount":
-        selected.get(
-            "bank_amount",
-            "N/A"
-        ),
-
-    "Invoice Amount":
-        selected.get(
-            "invoice_amount",
-            "N/A"
-        ),
-
-    "Amount Difference":
-        selected.get(
-            "amount_difference",
-            "N/A"
-        ),
-
-    "Date Difference":
-        selected.get(
-            "date_difference_days",
-            "N/A"
-        ),
-
-    "Confidence":
-        selected.get(
-            "confidence",
-            "N/A"
-        ),
-
-    "Confidence Margin":
-        selected.get(
-            "margin",
-            "N/A"
-        ),
-
-    "Status":
-        status
+    "Bank Vendor": selected.get("bank_vendor", "N/A"),
+    "Matched Invoice": selected.get("matched_invoice", "N/A"),
+    "Bank Amount": selected.get("bank_amount", "N/A"),
+    "Invoice Amount": selected.get("invoice_amount", "N/A"),
+    "Amount Difference": selected.get("amount_difference", "N/A"),
+    "Date Difference": selected.get("date_difference_days", "N/A"),
+    "Confidence": selected.get("confidence", "N/A"),
+    "Confidence Margin": selected.get("margin", "N/A"),
+    "Status": status
 }
 
-
 evidence_df = pd.DataFrame(
-    list(
-        evidence_fields.items()
-    ),
-    columns=[
-        "Evidence",
-        "Value"
-    ]
+    list(evidence_fields.items()), columns=["Evidence", "Value"]
 )
 
-
-with st.expander(
-    "View detailed evidence"
-):
-
-    st.dataframe(
-        evidence_df,
-        use_container_width=True,
-        hide_index=True
-    )
+with st.expander("View detailed evidence"):
+    st.dataframe(evidence_df, use_container_width=True, hide_index=True)
 
 
-# ============================================================
-# EXISTING EXCEPTION INFORMATION
-# ============================================================
+# ------------------------------------------------------------
+# Existing exception info
+# ------------------------------------------------------------
 
 if status != "AUTO_MATCH":
 
-    st.markdown(
-        "### ⚠ Exception Details"
-    )
+    st.write("")
+    st.markdown("**Exception Details**")
 
     exception_info = {}
 
     for column in [
-        "exception_type",
-        "exception",
-        "reason",
-        "severity",
-        "recommended_action",
-        "ai_reason",
-        "ai_action",
-        "ai_recommendation",
-        "ai_risk"
+        "exception_type", "exception", "reason", "severity",
+        "recommended_action", "ai_reason", "ai_action",
+        "ai_recommendation", "ai_risk"
     ]:
-
         if column in results.columns:
-
-            value = selected.get(
-                column
-            )
-
+            value = selected.get(column)
             if pd.notna(value):
-
-                exception_info[
-                    column.replace(
-                        "_",
-                        " "
-                    ).title()
-                ] = value
-
+                exception_info[column.replace("_", " ").title()] = value
 
     if exception_info:
-
         for key, value in exception_info.items():
-
-            st.write(
-                f"**{key}:** {value}"
+            st.markdown(
+                f'<div class="field-row"><span class="field-label">{key}</span>'
+                f'<span class="field-value">{value}</span></div>',
+                unsafe_allow_html=True
             )
-
     else:
-
-        st.info(
-            "No additional exception metadata "
-            "is available for this transaction."
-        )
+        st.caption("No additional exception metadata is available for this transaction.")
 
 
 # ============================================================
-# CLAUDE AI REVIEW
+# AI REVIEW (GEMINI)
 # ============================================================
 
-if status in [
-    "HUMAN_REVIEW",
-    "UNRESOLVED"
-]:
+if status in ["HUMAN_REVIEW", "UNRESOLVED"]:
 
-    st.divider()
-
+    st.write("")
     st.markdown(
-        "### 🤖 AI Finance Controller Review"
+        '<div class="section-header">06 · AI Investigation</div>',
+        unsafe_allow_html=True
     )
 
-    st.write(
-        "This transaction is outside the safe "
-        "automatic-matching boundary. Claude can "
-        "analyze the evidence and recommend the "
-        "next finance action."
+    st.caption(
+        "This transaction is outside the safe automatic-matching boundary. "
+        "Gemini can analyze the evidence and recommend the next finance action."
     )
 
-
-    # --------------------------------------------------------
-    # Check API key
-    # --------------------------------------------------------
-
-    api_key_available = bool(
-        os.getenv(
-            "ANTHROPIC_API_KEY"
-        )
-    )
-
+    api_key_available = bool(os.getenv("GEMINI_API_KEY"))
 
     if not api_key_available:
 
         st.info(
-            "Claude review is not configured yet. "
-            "Set the ANTHROPIC_API_KEY environment "
-            "variable to enable it."
+            "AI review is not configured yet. Set the GEMINI_API_KEY "
+            "environment variable to enable it."
         )
 
     else:
 
-        review_button = st.button(
-            "🤖 Ask Claude to Investigate",
-            type="primary"
-        )
-
+        review_button = st.button("Investigate with AI", type="primary")
 
         if review_button:
 
             try:
 
-                from exception_classifier import (
-                    ask_claude_to_review
-                )
-
-                # ----------------------------------------
-                # Build bank row
-                # ----------------------------------------
+                from exception_classifier import ask_gemini_to_review
 
                 bank_row = {
-                    "bank_id":
-                        selected.get(
-                            "bank_id"
-                        ),
-
-                    "vendor":
-                        selected.get(
-                            "bank_vendor"
-                        ),
-
-                    "amount":
-                        selected.get(
-                            "bank_amount"
-                        ),
-
-                    "date":
-                        selected.get(
-                            "bank_date"
-                        )
+                    "bank_id": selected.get("bank_id"),
+                    "bank_vendor": selected.get("bank_vendor"),
+                    "bank_amount": selected.get("bank_amount"),
+                    "bank_date": selected.get("bank_date"),
                 }
-
-
-                # ----------------------------------------
-                # Build invoice candidate
-                # ----------------------------------------
 
                 invoice = None
 
-                if pd.notna(
-                    selected.get(
-                        "matched_invoice",
-                        None
-                    )
-                ):
-
+                if pd.notna(selected.get("matched_invoice", None)):
                     invoice = {
-                        "invoice_id":
-                            selected.get(
-                                "matched_invoice"
-                            ),
-
-                        "vendor":
-                            selected.get(
-                                "invoice_vendor",
-                                selected.get(
-                                    "bank_vendor"
-                                )
-                            ),
-
-                        "amount":
-                            selected.get(
-                                "invoice_amount"
-                            ),
-
-                        "date":
-                            selected.get(
-                                "invoice_date"
-                            )
+                        "invoice_id": selected.get("matched_invoice"),
+                        "vendor": selected.get(
+                            "invoice_vendor", selected.get("bank_vendor")
+                        ),
+                        "amount": selected.get("invoice_amount"),
+                        "date": selected.get("invoice_date"),
                     }
 
+                score = float(selected.get("confidence", 0))
+                margin = float(selected.get("margin", 0))
 
-                # ----------------------------------------
-                # Score
-                # ----------------------------------------
-
-                score = float(
-                    selected.get(
-                        "confidence",
-                        0
-                    )
-                )
-
-
-                margin = float(
-                    selected.get(
-                        "margin",
-                        0
-                    )
-                )
-
-
-                # ----------------------------------------
-                # Call Claude
-                # ----------------------------------------
-
-                with st.spinner(
-                    "Claude is investigating the transaction..."
-                ):
-
-                    ai_result = (
-                        ask_claude_to_review(
-                            bank_row,
-                            invoice,
-                            score,
-                            margin
-                        )
+                with st.spinner("Gemini is investigating the transaction..."):
+                    ai_result = ask_gemini_to_review(
+                        bank_row, invoice, score, margin
                     )
 
-
-                # ----------------------------------------
-                # Display result
-                # ----------------------------------------
-
-                if isinstance(
-                    ai_result,
-                    dict
-                ):
+                if isinstance(ai_result, dict):
 
                     ai_col1, ai_col2 = st.columns(2)
 
-
                     with ai_col1:
-
-                        recommendation = ai_result.get(
-                            "recommendation",
-                            "REVIEW"
-                        )
-
                         st.metric(
                             "AI Recommendation",
-                            recommendation
+                            ai_result.get("recommendation", "REVIEW")
                         )
-
 
                     with ai_col2:
+                        st.metric("AI Risk", ai_result.get("risk", "UNKNOWN"))
 
-                        risk = ai_result.get(
-                            "risk",
-                            "UNKNOWN"
-                        )
+                    st.markdown("**Exception identified**")
+                    st.info(ai_result.get("exception_type", "Not specified"))
 
-                        st.metric(
-                            "AI Risk",
-                            risk
-                        )
+                    st.markdown("**AI Explanation**")
+                    st.write(ai_result.get("reason", "No explanation returned."))
 
-
-                    st.write(
-                        "**Exception identified**"
-                    )
-
-                    st.info(
-                        ai_result.get(
-                            "exception_type",
-                            "Not specified"
-                        )
-                    )
-
-
-                    st.write(
-                        "**AI Explanation**"
-                    )
-
-                    st.write(
-                        ai_result.get(
-                            "reason",
-                            "No explanation returned."
-                        )
-                    )
-
-
-                    st.write(
-                        "**Recommended Finance Action**"
-                    )
-
+                    st.markdown("**Recommended Finance Action**")
                     st.success(
-                        ai_result.get(
-                            "recommended_action",
-                            "Human review required."
-                        )
+                        ai_result.get("recommended_action", "Human review required.")
                     )
 
-
-                    # Store result visually in session
-                    st.session_state[
-                        "last_ai_result"
-                    ] = ai_result
-
+                    st.session_state["last_ai_result"] = ai_result
 
                 else:
-
-                    st.warning(
-                        "Claude returned an unexpected response."
-                    )
-
+                    st.warning("Gemini returned an unexpected response.")
 
             except ImportError:
-
                 st.error(
-                    "Could not import "
-                    "ask_claude_to_review() from "
-                    "exception_classifier.py."
+                    "Could not import ask_gemini_to_review() from exception_classifier.py."
                 )
-
-                st.code(
-                    "from exception_classifier import "
-                    "ask_claude_to_review"
-                )
-
+                st.code("from exception_classifier import ask_gemini_to_review")
 
             except Exception as error:
-
-                st.error(
-                    "Claude review failed."
-                )
-
-                st.code(
-                    str(error)
-                )
+                st.error("AI review failed.")
+                st.code(str(error))
 
 
 # ============================================================
 # ALL TRANSACTIONS
 # ============================================================
 
-st.divider()
-
+st.write("")
 st.markdown(
-    '<div class="section-title">'
-    'All Transactions'
-    '</div>',
+    '<div class="section-header">07 · All Transactions</div>',
     unsafe_allow_html=True
 )
 
-
 display_columns = [
-    column
-    for column in [
-        "bank_id",
-        "bank_vendor",
-        "bank_amount",
-        "matched_invoice",
-        "invoice_amount",
-        "amount_difference",
-        "date_difference_days",
-        "confidence",
-        "margin",
-        "status",
-        "correct"
+    column for column in [
+        "bank_id", "bank_vendor", "bank_amount", "matched_invoice",
+        "invoice_amount", "amount_difference", "date_difference_days",
+        "confidence", "margin", "status", "correct"
     ]
     if column in results.columns
 ]
 
-
-st.dataframe(
-    results[display_columns],
-    use_container_width=True,
-    hide_index=True
-)
+st.dataframe(results[display_columns], use_container_width=True, hide_index=True)
 
 
 # ============================================================
-# DOWNLOAD RESULTS
+# EXPORT
 # ============================================================
 
-st.divider()
-
+st.write("")
 st.markdown(
-    "### Export"
+    '<div class="section-header">Export</div>',
+    unsafe_allow_html=True
 )
 
-csv_data = results.to_csv(
-    index=False
-).encode("utf-8")
-
+csv_data = results.to_csv(index=False).encode("utf-8")
 
 st.download_button(
-    label="⬇ Download evaluated results",
+    label="Download evaluated results (.csv)",
     data=csv_data,
     file_name="evaluated_results.csv",
     mime="text/csv"
@@ -1302,10 +831,10 @@ st.download_button(
 # FOOTER
 # ============================================================
 
-st.divider()
-
-st.caption(
-    "AI Finance Controller • "
-    "Deterministic reconciliation + "
-    "selective AI investigation"
+st.write("")
+st.markdown(
+    '<hr><p style="color: #4A5568; font-size: 13px;">'
+    'AI Finance Controller — deterministic reconciliation with selective AI investigation.'
+    '</p>',
+    unsafe_allow_html=True
 )

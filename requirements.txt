@@ -1,0 +1,5 @@
+pandas
+rapidfuzz
+faker
+streamlit
+google-genai

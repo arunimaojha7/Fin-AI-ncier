@@ -65,6 +65,7 @@ def ask_gemini_to_review(
     client = genai.Client(
         api_key=api_key
     )
+    
 
     # ----------------------------------------------
     # BANK DATA
