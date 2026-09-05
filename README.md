@@ -107,7 +107,7 @@ requirements.txt
 
 ## Honest Limitations / What We'd Add With More Time
 
-- Currently validated on a single synthetic batch; would benefit from testing across multiple random seeds and larger volumes (500+ records) to confirm accuracy holds
+- - Validated across two independently randomized synthetic batches (see Robustness Validation above); would benefit from testing across more seeds and larger volumes (500+ records) to further confirm stability
 - Single-currency only; no handling of multi-currency or FX-adjusted amounts
 - No retry/caching layer for Gemini calls — a failed API call currently falls back to a safe default rather than retrying
 - No persistent storage; results are recomputed from CSVs on each run rather than stored in a database
