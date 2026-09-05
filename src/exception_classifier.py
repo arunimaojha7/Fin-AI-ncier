@@ -17,7 +17,7 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 # GEMINI SETTINGS
 # ==================================================
 
-GEMINI_MODEL = "gemini-3.7-flash"
+GEMINI_MODEL = "gemini-3.6-flash"
 
 
 # ==================================================
