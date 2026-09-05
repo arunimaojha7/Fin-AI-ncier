@@ -1,9 +1,11 @@
 import os
 import json
 from pathlib import Path
-
-import pandas as pd
 from google import genai
+import pandas as pd
+from dotenv import load_dotenv
+load_dotenv()
+api_key = os.getenv("GEMINI_API_KEY")
 
 
 # ==================================================
